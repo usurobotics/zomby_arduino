@@ -186,48 +186,52 @@ void computer_control() {
   static byte right_speed;
   static byte left_speed;
 
+  int kill_switch = 0;
   // Wait for message
-  while (1) {
+  while (kill_switch < 50) {
+    //Get kill switch
+    kill_switch = receiver.getMap(GEAR_CH);
     if (Serial.available() >= 4) {
       break;
     }
   }
 
-  // Read the four bytes and store the data
-  for (int i = 0; i < 2; i++) {
+  if (kill_switch < 50) {
+    // Read the four bytes and store the data
+    for (int i = 0; i < 2; i++) {
 
-      // Read two bytes. First is motor ID and second is speed
-      id = Serial.read();
-      speed_received = Serial.read();
+        // Read two bytes. First is motor ID and second is speed
+        id = Serial.read();
+        speed_received = Serial.read();
 
-      Serial.print("ID: ");
-      Serial.print(id);
-      Serial.print("Speed: ");
-      Serial.print(speed_received);
+        Serial.print("ID: ");
+        Serial.print(id);
+        Serial.print("Speed: ");
+        Serial.print(speed_received);
 
-      // If received speed is for the right motor
-      if (id == MOTOR_ID_R) {
+        // If received speed is for the right motor
+        if (id == MOTOR_ID_R) {
 
-          right_speed = speed_received;
-          
-      }
+            right_speed = speed_received;
+            
+        }
 
-      // If received speed is for the left motor
-      else if (id == MOTOR_ID_L) {
+        // If received speed is for the left motor
+        else if (id == MOTOR_ID_L) {
 
-          left_speed = speed_received;
+            left_speed = speed_received;
 
-      }
+        }
+
+    }
+
+    // Set right motor speeds
+    roboclaw.ForwardBackwardM1(right_front, right_speed);
+    roboclaw.ForwardBackwardM1(right_rear,  right_speed);
+
+    // Set left motor speeds
+    roboclaw.ForwardBackwardM1(left_front,  left_speed);
+    roboclaw.ForwardBackwardM1(left_rear,   left_speed);
 
   }
-
-  // Set right motor speeds
-  roboclaw.ForwardBackwardM1(right_front, right_speed);
-  roboclaw.ForwardBackwardM1(right_rear,  right_speed);
-
-  // Set left motor speeds
-  roboclaw.ForwardBackwardM1(left_front,  left_speed);
-  roboclaw.ForwardBackwardM1(left_rear,   left_speed);
-
-
 }
