@@ -120,16 +120,16 @@ void loop() {
 
 void RC_control() {
 
-    int speed = map(receiver.getMap(ELEV_CH), 0, 100, 0, 128);
+    uint8_t speed = map(receiver.getMap(ELEV_CH), 0, 100, 0, 128);
     // Serial.print("Speed value: ");
     // Serial.println(speed);
-    int difference = map(receiver.getMap(AIL_CH), 0, 100, 40, -40);
+    int difference = map(receiver.getMap(AIL_CH), 0, 100, -40, 40);
     // Serial.print("Difference value: ");
     // Serial.println(difference);
 
     // Create dead zone in the middle of the stick so the robot will stop moving
     // when stick is in the middle
-    if (speed >= 60 && speed <= 68)
+    if (speed >= 58 && speed <= 70)
     {
         speed = 64;
     }
@@ -138,13 +138,41 @@ void RC_control() {
         difference = 0;
     }
 
-    int final_speed_left = speed - difference;
-    int final_speed_right = speed + difference;
+    int final_speed_left = speed + difference;
+    int final_speed_right = speed - difference;
 
-    roboclaw.ForwardBackwardM1(left_front,  final_speed_left);
-    roboclaw.ForwardBackwardM1(right_front, final_speed_right);
-    roboclaw.ForwardBackwardM1(left_rear,   final_speed_left);
-    roboclaw.ForwardBackwardM1(right_rear,  final_speed_right);
+    int final_speed_left_sat;
+    int final_speed_right_sat;
+
+    if (final_speed_left > 127) {
+      final_speed_left_sat = 127;
+    }
+    else if (final_speed_left < 0) {
+      final_speed_left_sat = 0;
+    }
+    else {
+      final_speed_left_sat = final_speed_left;
+    }
+    
+    if (final_speed_right > 127) {
+      final_speed_right_sat = 127;
+    }
+    else if (final_speed_right < 0) {
+      final_speed_right_sat = 0;
+    }
+    else {
+      final_speed_right_sat = final_speed_right;
+    }
+
+    // Serial.print("final_speed_left_sat: ");
+    // Serial.println(final_speed_left_sat);
+    // Serial.print("final_speed_right_sat: ");
+    // Serial.println(final_speed_right_sat);
+
+    roboclaw.ForwardBackwardM1(left_front,  final_speed_left_sat);
+    roboclaw.ForwardBackwardM1(right_front, final_speed_right_sat);
+    roboclaw.ForwardBackwardM1(left_rear,   final_speed_left_sat);
+    roboclaw.ForwardBackwardM1(right_rear,  final_speed_right_sat);
 
 }
 
