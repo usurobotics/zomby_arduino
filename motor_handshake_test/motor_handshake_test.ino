@@ -2,12 +2,15 @@
 
 #include <RC_Receiver.h>
 
-RC_Receiver receiver(12, 11, 10);
-/* Ch1: 12
- * Ch2: 11
- * Ch3: 10
+RC_Receiver receiver(13, 0, 12, 0, 11);
+/* Ch1: 13
+ * Ch2: 
+ * Ch3: 12
  * Ch4: 
- * Ch5: 
+ * Ch5: 11
+ * Ch6:
+ * Ch7:
+ * Ch8:
  */
 
 //Channel min and max value
@@ -23,9 +26,22 @@ int minMax[3][2] = {
   //  {1880,1080}   // Ch6: 
 };
 
-#define ELEV_CH 2
+/* **** Reciever Output ****
+    -- IN HELICOPTER MODE --
+  CH1: R-joystick Left-Right - Aileron
+  CH2: L-joystick Up-Down
+  CH3: R-joystick Up-Down - Elevator
+  CH4: L-joystick Left-Right
+  CH5: Killswitch
+  CH6:
+  CH7:
+  CH8:
+
+//*/
+
 #define AIL_CH 1
-#define GEAR_CH 3
+#define ELEV_CH 3
+#define GEAR_CH 5
 // #define AUX_CH 6
 
 #define MOTOR_ID_R 'r'
@@ -88,8 +104,13 @@ void loop() {
     // Get RC switch value
     int kill_switch = receiver.getMap(GEAR_CH);
 
-    // Serial.print("kill_switch value: ");
-    // Serial.println(kill_switch);
+     Serial.print("kill_switch value: ");
+     Serial.println(kill_switch);
+
+    int kill_switch = receiver.getMap(GEAR_CH);
+
+     Serial.print("kill_switch value: ");
+     Serial.println(kill_switch);
 
     // If aux switch is on
     if (kill_switch >= 50) {
